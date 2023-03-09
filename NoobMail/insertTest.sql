@@ -1,0 +1,13 @@
+insert into account values(
+"us1", 
+"user1", 
+"F9777362314A88BA0D7DF701ED6BEBD0A3577BE33BEFE72BABC40C39DE65AB1F",
+false
+);
+
+insert into account values(
+"us2", 
+"user2", 
+"2A63ACD1AE63929783AB9179B4D123562B21F8091C05D2EF4F0FAD866AB5C7C9",
+false
+);
