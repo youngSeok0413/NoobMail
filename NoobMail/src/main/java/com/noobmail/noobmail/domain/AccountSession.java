@@ -53,9 +53,7 @@ public class AccountSession implements DTO{
     }
 
     @Override
-    public String columns(Map<String, String> sets) {
-        if(sets.isEmpty()) sets = this.dataSet;
-
+    public String columns() {
         String columns = new String();
 
         for(Map.Entry<String, String> entry : dataSet.entrySet())
@@ -68,7 +66,7 @@ public class AccountSession implements DTO{
     }
 
     @Override
-    public String values(Map<String, String> sets) {
+    public String values() {
         return "\""+getId()+"\","
                 +"\""+getUsername()+"\","
                 +getSecession_confirmed();

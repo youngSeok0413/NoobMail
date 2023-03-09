@@ -62,8 +62,7 @@ public class Account implements DTO {
 	}
 
 	@Override
-	public String columns(Map<String, String> sets) {
-		if(sets.isEmpty()) sets = this.dataSet;
+	public String columns() {
 
 		String columns = new String();
 
@@ -77,7 +76,7 @@ public class Account implements DTO {
 	}
 
 	@Override
-	public String values(Map<String, String> sets) {
+	public String values() {
 		return "\""+getId()+"\","
 				+"\""+getUsername()+"\","
 				+"\""+dataSet.get("pass")+"\","

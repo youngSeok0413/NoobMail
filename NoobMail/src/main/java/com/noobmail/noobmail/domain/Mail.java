@@ -2,6 +2,8 @@ package com.noobmail.noobmail.domain;
 
 import com.mysql.cj.xdevapi.JsonParser;
 import com.noobmail.noobmail.admin.Sha256;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -86,13 +88,36 @@ public class Mail implements DTO{
 	}
 
 	//file path
-	public JSONObject getFilePath() throws ParseException {
-		JSONParser jsonParser = new JSONParser();
-		return  new JSONObject(jsonParser.parse(dataSet.get("file_path")));
+	public JSONArray getFilePath() throws ParseException {
+		JSONArray jsonArray = (JSONArray) new JSONParser().parse(dataSet.get("filePath"));
+		return jsonArray;
 	}
 
-	public void setFilePath(JSONObject filePath) {
-		dataSet.replace("file_path", filePath.toString());
+	public void setFilePath(JSONArray filePath) throws JSONException {
+		dataSet.put("filePath", jsonArrayToString(filePath));
+	}
+
+	public void addFilePathToJSON(String fileName, String filePath, JSONArray arr) throws JSONException {
+		JSONObject obj = new JSONObject();
+		obj.put("name", fileName);
+		obj.put("path", filePath);
+		arr.put(obj);
+	}
+
+	private String jsonArrayToString(JSONArray arr) throws JSONException {
+		String str = "[";
+		for(int i = 0; i < arr.length(); i++){
+			JSONObject obj = arr.getJSONObject(i);
+			str += "{ \'name\':\'" + obj.getString("name")  + "\'"
+					+ ", \'path\':\'"+obj.getString("path") + "\'} ,";
+		}
+
+		if(!str.isEmpty() && str.length() != 0)
+			str.substring(0, str.length()-1);
+
+		str+="]";
+
+		return str;
 	}
 
 	//garbage
@@ -124,9 +149,7 @@ public class Mail implements DTO{
 
 
 	@Override
-	public String columns(Map<String, String> sets) {
-		if(sets.isEmpty()) sets = this.dataSet;
-
+	public String columns() {
 		String columns = new String();
 
 		for(Map.Entry<String, String> entry : dataSet.entrySet())
@@ -139,19 +162,33 @@ public class Mail implements DTO{
 	}
 
 	@Override
-	public String values(Map<String, String> sets) throws ParseException {
-		String fp = new String();
-		JSONObject obj = getFilePath();
-		for(int i = 0; i < obj.length(); i++){
-
-		}
-
+	public String values() throws JSONException, ParseException {
 		return "\""+getId()+"\","
 				+"now()"+","
 				+"\""+getSender()+"\","
 				+"\""+getReceiver()+"\","
 				+"\""+getTitle()+"\","
 				+"\""+getText()+"\","
-				+"jsonObject("++")",";
+				+ fpToString() +","
+				+isGarbage_confirmed()+","
+				+isDelete_confirmed();
+	}
+
+	private String fpToString() throws ParseException, JSONException {
+		JSONArray arr = getFilePath();
+
+		String str = "json_array(";
+		for(int i = 0; i < arr.length(); i++){
+			JSONObject obj = arr.getJSONObject(i);
+			str += "json_object(\'name\':\'" + obj.getString("name")  + "\'"
+					+ ", \'path\':\'"+obj.getString("path") + "\'),";
+		}
+
+		if(!str.isEmpty() && str.length() != 0)
+			str.substring(0, str.length()-1);
+
+		str+=")";
+
+		return str;
 	}
 }
